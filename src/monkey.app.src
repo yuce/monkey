@@ -1,0 +1,15 @@
+{application, 'monkey',
+ [{description, "Experimental Pooling TCP Server Library"},
+  {vsn, "0.1.0"},
+  {registered, []},
+  {applications,
+   [kernel,
+    stdlib
+   ]},
+  {env,[]},
+  {modules, []},
+
+  {maintainers, ["Yuce Tekol"]},
+  {licenses, ["MIT"]},
+  {links, [{"Github", "https://github.com/yuce/monkey.erl"}]}
+ ]}.
