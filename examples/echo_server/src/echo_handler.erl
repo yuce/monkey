@@ -8,15 +8,19 @@
 init() ->
     {ok, undefined}.
 
-handle({tcp, Data}, State) ->
-    io:format("Received data: ~p~n", [Data]),
-    monkey_handler:send(self(), Data),
-    {ok, State};
+handle(open, State) ->
+    io:format("CONNECTED.~n"),
+    % {noreply, State};
+    {reply, <<"Connected, yay!\r\n">>, State};
 
-handle(tcp_closed, State) ->
-    io:format("Received close.~n"),
-    {ok, State};
+handle({data, Data}, State) ->
+    io:format("Received data: ~p~n", [Data]),
+    {reply, Data, State};
+
+handle(close, _State) ->
+    io:format("DISCONNECTED.~n"),
+    stop;
 
 handle(_, State) ->
-    {ok, State}.
+    {noreply, State}.
 

@@ -4,4 +4,4 @@
 
 start_link(Port) ->
     monkey_service:start_link(http_handler, [{port, Port},
-                                             {handler_count, 100}]).
+                                             {handler_count, 1}]).

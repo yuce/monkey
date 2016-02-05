@@ -56,12 +56,14 @@ init(Handler, Args, Parent) ->
 
 loop_msg(#state{parent = Parent,
                 debug = Debug} = State) ->
+    % io:format("Free: ~p~n", [length(State#state.free)]),
     receive
         {system, From, Msg} ->
             sys:handle_system_msg(Msg, From, Parent, ?MODULE, Debug, State);
         {'EXIT', Parent, Reason} ->
             terminate(Reason, State);
-        {'EXIT', Child, _Reason} ->
+        {'EXIT', Child, Reason} ->
+            io:format("EXIT Child: ~p: ~p~n", [Child, Reason]),
             State1 = replace(Child, State),
             NewDebug = sys:handle_debug(Debug, fun debug/3, stop_request, Child),
             State2 = State1#state{debug = NewDebug},

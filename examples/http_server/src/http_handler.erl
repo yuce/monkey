@@ -20,9 +20,8 @@ init() ->
     ],
     {ok, #{response => CannedResponse}}.
 
-handle({tcp, _Data}, #{response := Response} = State) ->
-    monkey_handler:send(self(), Response),
-    {ok, State};
+handle({data, _Data}, #{response := Response} = State) ->
+    {reply, Response, State};
 
-handle(_, State) ->
-    {ok, State}.
+handle(_Msg, State) ->
+    {noreply, State}.

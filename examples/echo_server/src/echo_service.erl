@@ -6,4 +6,4 @@
 
 start_link(Port) ->
     monkey_service:start_link(echo_handler, [{port, Port},
-                                             {handler_count, 10}]).
+                                             {handler_count, 100}]).
