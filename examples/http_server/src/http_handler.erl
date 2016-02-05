@@ -1,10 +1,10 @@
 -module(http_handler).
 -behaviour(monkey_handler).
 
--export([init/0,
+-export([init/1,
          handle/2]).
 
-init() ->
+init(_Args) ->
     Body = <<"Hello, World!\r\n">>,
     BinContentLength = integer_to_binary(byte_size(Body)),
     BinDate = <<"Mon, 23 May 2005 22:38:34 GMT">>,
