@@ -1,10 +1,10 @@
 -module(monkey_handler).
 
 -export([assign_socket/2]).
--export([init/2,
+-export([init/3,
          loop_tcp/2]).
 
--callback init() ->
+-callback init(Args :: map()) ->
     {ok, State :: term()}.
 
 -callback handle(Message :: term(), UserState :: term()) ->
@@ -13,7 +13,7 @@
     {reply, Reply :: iodata(), NewUserState :: term()} |
     stop.
 
--record(state, {service, handler, user_state}).
+-record(state, {service, handler, user_state, user_args}).
 
 %% == API
 
@@ -30,17 +30,19 @@ assign_socket(Pid, Sock) ->
 
 %% == Callbacks
 
-init(Handler, Service) ->
+init(Handler, Service, UserArgs) ->
     State = #state{service = Service,
-                   handler = Handler},
+                   handler = Handler,
+                   user_args = UserArgs},
     loop_wait(State).
 
 %%  == Internal
 
-loop_wait(#state{handler = Handler} = State) ->
+loop_wait(#state{handler = Handler,
+                 user_args = UserArgs} = State) ->
     receive
         {assign_socket, Sock} ->
-            {ok, UserState} = Handler:init(),
+            {ok, UserState} = Handler:init(UserArgs),
             NewState = State#state{user_state = UserState},
             handle(open, Sock, NewState);
         Flush ->

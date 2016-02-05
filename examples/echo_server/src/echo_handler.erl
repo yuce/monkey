@@ -1,16 +1,16 @@
 -module(echo_handler).
 -behaviour(monkey_handler).
 
--export([init/0,
+-export([init/1,
          handle/2]).
 
 
-init() ->
-    {ok, undefined}.
+init(Args) ->
+    {ok, Args}.
 
-handle(open, State) ->
-    io:format("CONNECTED.~n"),
-    % {noreply, State};
+handle(open, #{handler := Handler,
+               port := Port} = State) ->
+    io:format("CONNECTED. handler: ~p (port: ~p)~n", [Handler, Port]),
     {reply, <<"Connected, yay!\r\n">>, State};
 
 handle({data, Data}, State) ->
