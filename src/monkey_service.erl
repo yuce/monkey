@@ -14,6 +14,9 @@
 -callback handler_args(State :: term()) ->
     {ok, Args :: map()}.
 
+-callback handle(Message :: term(), State :: term()) ->
+    {ok, NewState :: term()}.
+
 -define(DEFAULT_PORT, 10901).
 -define(DEFAULT_HANDLER_COUNT, 5).
 
@@ -65,6 +68,8 @@ init(ServiceMod, Parent, Handler, Args) ->
 %%  == Internal
 
 loop_msg(#state{parent = Parent,
+                service_mod = ServiceMod,
+                user_state = UserState,
                 debug = Debug} = State) ->
     receive
         {system, From, Msg} ->
@@ -80,9 +85,10 @@ loop_msg(#state{parent = Parent,
         {release, Pid} ->
             NewState = deallocate(Pid, State),
             loop_msg(NewState);
-        Flush ->
-            io:format("monkey_service flushed: ~p~n", [Flush]),
-            loop_msg(State)
+        Message ->
+            {ok, NewUserState} = ServiceMod:handle({message, Message}, UserState),
+            NewState = State#state{user_state = NewUserState},
+            loop_msg(NewState)
         after 0 ->
             allocate_next(State)
     end.
