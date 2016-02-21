@@ -45,6 +45,9 @@ release(Service, Pid) ->
 
 %% == Callbacks
 
+init(ServiceMod, Parent, Handler, Args) when is_list(Args) ->
+    init(ServiceMod, Parent, Handler, maps:from_list(Args));
+
 init(ServiceMod, Parent, Handler, Args) ->
     Port = get_port(Args),
     process_flag(trap_exit, true),
