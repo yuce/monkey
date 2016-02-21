@@ -80,7 +80,8 @@ loop_msg(#state{parent = Parent,
             io:format("EXIT Child: ~p: ~p~n", [Child, Reason]),
             State1 = replace(Child, State),
             NewDebug = sys:handle_debug(Debug, fun debug/3, stop_request, Child),
-            State2 = State1#state{debug = NewDebug},
+            {ok, NewUserState} = ServiceMod:handle({exit_child, Child, Reason}, UserState),
+            State2 = State1#state{debug = NewDebug, user_state = NewUserState},
             loop_msg(State2);
         {release, Pid} ->
             NewState = deallocate(Pid, State),
@@ -124,6 +125,7 @@ accept(#state{lsock = LSock,
 
 terminate(Reason, #state{lsock = LSock,
                          debug = Debug}) ->
+    io:format("monkey_service terminate: ~p~n", [Reason]),
     sys:handle_debug(Debug, fun debug/3, terminating, Reason),
     gen_tcp:close(LSock),
     exit(Reason).
