@@ -46,7 +46,7 @@ loop_wait(#state{handler = Handler,
             NewState = State#state{user_state = UserState},
             handle(open, Sock, NewState);
         Flush ->
-            io:format("tcp_hander flushed: ~p~n", [Flush]),
+            io:format("tcp_handler flushed: ~p~n", [Flush]),
             loop_wait(State)
     end.
 
